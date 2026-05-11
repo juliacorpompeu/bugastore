@@ -1,54 +1,266 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BugaStore</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
 body{
-background:#111;
-color:white;
-font-family:Arial;
-padding:30px;
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#0f0f0f;
+    color:white;
 }
+
+header{
+    background:#171717;
+    padding:20px;
+    color:#f2c14e;
+    font-size:32px;
+    font-weight:bold;
+    text-align:center;
+}
+
+nav{
+    display:flex;
+    overflow:auto;
+    background:#1d1d1d;
+    padding:10px;
+    gap:10px;
+}
+
+nav button{
+    background:#2a2a2a;
+    color:white;
+    border:none;
+    padding:12px 18px;
+    border-radius:10px;
+    min-width:120px;
+}
+
+.container{
+    padding:20px;
+}
+
 .card{
-background:#1e1e1e;
-padding:20px;
-border-radius:15px;
-margin-top:20px;
+    background:#1a1a1a;
+    padding:20px;
+    border-radius:16px;
+    margin-bottom:20px;
 }
+
 .gold{
-color:#f2c14e;
+    color:#f2c14e;
 }
-button{
-background:#f2c14e;
-border:none;
-padding:12px 20px;
-border-radius:10px;
-font-weight:bold;
+
+input, select{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    background:#2c2c2c;
+    color:white;
+}
+
+.action{
+    background:#f2c14e;
+    color:black;
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    font-weight:bold;
+    margin-top:15px;
+    width:100%;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th, td{
+    border-bottom:1px solid #333;
+    padding:12px;
+    text-align:left;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
 }
 </style>
 </head>
 
 <body>
 
-<h1 class="gold">BugaStore</h1>
+<header>BugaStore</header>
 
-<div class="card">
-<h2>Dashboard</h2>
-<p>Sistema online funcionando 🚀</p>
+<nav>
+    <button onclick="mostrarPagina('dashboard')">Dashboard</button>
+    <button onclick="mostrarPagina('produtos')">Produtos</button>
+    <button onclick="mostrarPagina('estoque')">Estoque</button>
+    <button onclick="mostrarPagina('financeiro')">Financeiro</button>
+</nav>
+
+<div class="container">
+
+<div id="dashboard" class="page active">
+    <div class="card">
+        <h2 class="gold">Dashboard</h2>
+        <p>Sistema funcionando no iPhone 🚀</p>
+    </div>
+
+    <div class="card">
+        <h2>Vendas Hoje</h2>
+        <h1 class="gold">R$ 5.480</h1>
+    </div>
+
+    <div class="card">
+        <h2>Produtos em Estoque</h2>
+        <h1 class="gold" id="totalProdutos">2</h1>
+    </div>
 </div>
 
-<div class="card">
-<h2>Vendas Hoje</h2>
-<h1>R$ 5.480</h1>
+<div id="produtos" class="page">
+    <div class="card">
+        <h2 class="gold">Cadastrar Produto</h2>
+
+        <input id="nome" placeholder="Nome do produto">
+
+        <select id="categoria">
+            <option>Roupa</option>
+            <option>Perfume</option>
+            <option>Bebida</option>
+        </select>
+
+        <input id="preco" placeholder="Preço">
+        <input id="estoqueInput" placeholder="Quantidade">
+
+        <button class="action" onclick="adicionarProduto()">
+            Salvar Produto
+        </button>
+    </div>
+
+    <div class="card">
+        <h2 class="gold">Lista de Produtos</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Categoria</th>
+                    <th>Preço</th>
+                    <th>Estoque</th>
+                </tr>
+            </thead>
+
+            <tbody id="listaProdutos"></tbody>
+        </table>
+    </div>
 </div>
 
-<div class="card">
-<h2>Estoque</h2>
-<p>48 produtos cadastrados</p>
+<div id="estoque" class="page">
+    <div class="card">
+        <h2 class="gold">Controle de Estoque</h2>
+        <p>✔ Entrada e saída de mercadoria</p>
+        <p>✔ Controle de roupas</p>
+        <p>✔ Controle de perfumes</p>
+        <p>✔ Controle de bebidas</p>
+    </div>
 </div>
 
-<button>Entrar no Sistema</button>
+<div id="financeiro" class="page">
+    <div class="card">
+        <h2 class="gold">Financeiro</h2>
+        <p>Lucro estimado do mês:</p>
+        <h1 class="gold">R$ 12.890</h1>
+    </div>
+</div>
+
+</div>
+
+<script>
+
+let produtos = [
+    {
+        nome:"Perfume Malbec",
+        categoria:"Perfume",
+        preco:"149.90",
+        estoque:"12"
+    },
+    {
+        nome:"Vestido Preto",
+        categoria:"Roupa",
+        preco:"89.90",
+        estoque:"5"
+    }
+];
+
+function mostrarPagina(id){
+    document.querySelectorAll('.page').forEach(p=>{
+        p.classList.remove('active');
+    });
+
+    document.getElementById(id).classList.add('active');
+}
+
+function renderizarProdutos(){
+
+    const tabela = document.getElementById('listaProdutos');
+    tabela.innerHTML = '';
+
+    produtos.forEach(produto => {
+
+        tabela.innerHTML += `
+            <tr>
+                <td>${produto.nome}</td>
+                <td>${produto.categoria}</td>
+                <td>R$ ${produto.preco}</td>
+                <td>${produto.estoque}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById('totalProdutos').innerText = produtos.length;
+}
+
+function adicionarProduto(){
+
+    const nome = document.getElementById('nome').value;
+    const categoria = document.getElementById('categoria').value;
+    const preco = document.getElementById('preco').value;
+    const estoque = document.getElementById('estoqueInput').value;
+
+    if(!nome || !preco || !estoque){
+        alert('Preencha todos os campos');
+        return;
+    }
+
+    produtos.push({
+        nome,
+        categoria,
+        preco,
+        estoque
+    });
+
+    renderizarProdutos();
+
+    alert('Produto cadastrado com sucesso!');
+
+    document.getElementById('nome').value = '';
+    document.getElementById('preco').value = '';
+    document.getElementById('estoqueInput').value = '';
+}
+
+renderizarProdutos();
+
+</script>
 
 </body>
 </html>
