@@ -6,6 +6,7 @@
 <title>BugaStore</title>
 
 <style>
+
 body{
     margin:0;
     font-family:Arial, sans-serif;
@@ -94,6 +95,7 @@ th, td{
 .page.active{
     display:block;
 }
+
 </style>
 </head>
 
@@ -106,11 +108,13 @@ th, td{
     <button onclick="mostrarPagina('produtos')">Produtos</button>
     <button onclick="mostrarPagina('estoque')">Estoque</button>
     <button onclick="mostrarPagina('financeiro')">Financeiro</button>
+    <button onclick="mostrarPagina('pdv')">PDV</button>
 </nav>
 
 <div class="container">
 
 <div id="dashboard" class="page active">
+
     <div class="card">
         <h2 class="gold">Dashboard</h2>
         <p>Sistema funcionando no iPhone 🚀</p>
@@ -125,10 +129,13 @@ th, td{
         <h2>Produtos em Estoque</h2>
         <h1 class="gold" id="totalProdutos">2</h1>
     </div>
+
 </div>
 
 <div id="produtos" class="page">
+
     <div class="card">
+
         <h2 class="gold">Cadastrar Produto</h2>
 
         <input id="nome" placeholder="Nome do produto">
@@ -145,12 +152,15 @@ th, td{
         <button class="action" onclick="adicionarProduto()">
             Salvar Produto
         </button>
+
     </div>
 
     <div class="card">
+
         <h2 class="gold">Lista de Produtos</h2>
 
         <table>
+
             <thead>
                 <tr>
                     <th>Produto</th>
@@ -161,26 +171,74 @@ th, td{
             </thead>
 
             <tbody id="listaProdutos"></tbody>
+
         </table>
+
     </div>
+
 </div>
 
 <div id="estoque" class="page">
+
     <div class="card">
         <h2 class="gold">Controle de Estoque</h2>
+
         <p>✔ Entrada e saída de mercadoria</p>
         <p>✔ Controle de roupas</p>
         <p>✔ Controle de perfumes</p>
         <p>✔ Controle de bebidas</p>
     </div>
+
 </div>
 
 <div id="financeiro" class="page">
+
     <div class="card">
         <h2 class="gold">Financeiro</h2>
+
         <p>Lucro estimado do mês:</p>
+
         <h1 class="gold">R$ 12.890</h1>
     </div>
+
+</div>
+
+<div id="pdv" class="page">
+
+    <div class="card">
+
+        <h2 class="gold">PDV (Caixa)</h2>
+
+        <input id="produtoVenda" placeholder="Produto">
+        <input id="valorVenda" placeholder="Valor">
+
+        <button class="action" onclick="adicionarVenda()">
+            Adicionar Venda
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <h2 class="gold">Vendas Realizadas</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+
+            <tbody id="listaVendas"></tbody>
+
+        </table>
+
+        <h2>Total: R$ <span id="totalVendas">0</span></h2>
+
+    </div>
+
 </div>
 
 </div>
@@ -202,7 +260,11 @@ let produtos = [
     }
 ];
 
+let vendas = [];
+let total = 0;
+
 function mostrarPagina(id){
+
     document.querySelectorAll('.page').forEach(p=>{
         p.classList.remove('active');
     });
@@ -213,6 +275,7 @@ function mostrarPagina(id){
 function renderizarProdutos(){
 
     const tabela = document.getElementById('listaProdutos');
+
     tabela.innerHTML = '';
 
     produtos.forEach(produto => {
@@ -238,6 +301,7 @@ function adicionarProduto(){
     const estoque = document.getElementById('estoqueInput').value;
 
     if(!nome || !preco || !estoque){
+
         alert('Preencha todos os campos');
         return;
     }
@@ -256,6 +320,49 @@ function adicionarProduto(){
     document.getElementById('nome').value = '';
     document.getElementById('preco').value = '';
     document.getElementById('estoqueInput').value = '';
+}
+
+function adicionarVenda(){
+
+    const produto = document.getElementById('produtoVenda').value;
+    const valor = document.getElementById('valorVenda').value;
+
+    if(!produto || !valor){
+
+        alert('Preencha todos os campos');
+        return;
+    }
+
+    vendas.push({
+        produto,
+        valor
+    });
+
+    total += Number(valor);
+
+    renderizarVendas();
+
+    document.getElementById('produtoVenda').value = '';
+    document.getElementById('valorVenda').value = '';
+}
+
+function renderizarVendas(){
+
+    const tabela = document.getElementById('listaVendas');
+
+    tabela.innerHTML = '';
+
+    vendas.forEach(venda => {
+
+        tabela.innerHTML += `
+            <tr>
+                <td>${venda.produto}</td>
+                <td>R$ ${venda.valor}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById('totalVendas').innerText = total.toFixed(2);
 }
 
 renderizarProdutos();
